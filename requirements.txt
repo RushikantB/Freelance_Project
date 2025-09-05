@@ -1,0 +1,8 @@
+selenium
+pytest
+webdriver-manager
+openpyxl
+requests
+pyyaml
+Appium-Python-Client
+pytest-html
