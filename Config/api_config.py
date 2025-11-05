@@ -1,4 +1,5 @@
 class APIConfig:
-    UAT_URL = "https://pacehruatapi.azurewebsites.net"
-    AUTH_TOKEN = "/G1nHwEnLJWGu8FwB3MCn1NZtV5pr56efyvIZEFN1ZKKoIyJ4d771X1NYud26WhZ7BHLY/J+nzZr7/lI3cE8Tg=="         # Load dynamically if needed
-    QA_URL = "https://pacehr-q-api-app-gzeqejb5gnc7d6dg.eastus2-01.azurewebsites.net"
+    UAT_URL = "https://reqres.in/"
+    # Load dynamically if needed
+    AUTH_TOKEN = "4935db8cd3dd522de2c778ecc51eb89163bf1a533b90c322d175478739ce47e6"
+    QA_URL = "https://gorest.co.in/"

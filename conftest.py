@@ -10,9 +10,13 @@ from datetime import datetime
 from Utils.ExcelTestSelector import ExcelTestSelector
 from Utils.Device_Driver import get_android_driver, get_ios_driver
 from Utils.ScreenshotUtil import ScreenshotUtil
+from Utils.API_Helpers import APIClient
+from Config.api_config import APIConfig
 
-#------- Fixture to initialize the WebDriver -------
+# ------- Fixture to initialize the WebDriver -------
 # This fixture will be used in the test classes to initialize the WebDriver
+
+
 @pytest.fixture(scope="class")
 def driver_init(request):
     browser = Config.BROWSER.lower()
@@ -33,7 +37,9 @@ def driver_init(request):
     yield
     driver.quit()
 
-#------ Hook to take screenshot on test failure ------
+# ------ Hook to take screenshot on test failure ------
+
+
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
@@ -48,12 +54,14 @@ def pytest_runtest_makereport(item, call):
 
     if report.when in ("setup", "call"):
         if report.failed:
-            screenshot_util.take_screenshot(test_name, status="Fail", level="Final")
+            screenshot_util.take_screenshot(
+                test_name, status="Fail", level="Final")
     elif report.passed:
-        screenshot_util.take_screenshot(test_name, status="Pass", level="Final")
+        screenshot_util.take_screenshot(
+            test_name, status="Pass", level="Final")
 
 
-#----Read test cases from Excel file and filter tests based on selection----
+# ----Read test cases from Excel file and filter tests based on selection----
 def pytest_collection_modifyitems(config, items):
     selector = ExcelTestSelector('Resources/TestCasesSelector.xlsx')
     selected_test_names = selector.get_selected_tests()
@@ -71,8 +79,10 @@ def pytest_collection_modifyitems(config, items):
     items[:] = selected_items
     config.hook.pytest_deselected(items=deselected_items)
 
-#-------------------Device Driver Fixture-------------------
+# -------------------Device Driver Fixture-------------------
 # This fixture will initialize the Appium driver for mobile testing based on the platform specified
+
+
 @pytest.fixture(scope="function")
 def mobile_driver(request):
     platform = request.config.getoption("--platform").lower()
@@ -88,6 +98,7 @@ def mobile_driver(request):
     yield driver
     driver.quit()
 
+
 def pytest_addoption(parser):
     parser.addoption(
         "--platform",
@@ -95,5 +106,23 @@ def pytest_addoption(parser):
         default="android",
         help="Choose platform: android or ios"
     )
-#-----------------------------------------------------    
+# -----------------------------------------------------
 
+# Optional: Token fixture (if you want to generate token once via login)
+
+
+@pytest.fixture(scope="session")
+def auth_token():
+    # If token is empty, get it via login API
+    if not APIConfig.AUTH_TOKEN:
+        client = APIClient(use_auth=False)
+        response = client.post("/api/login", data={
+            "email": "eve.holt@reqres.in",
+            "password": "cityslicka"
+        })
+        assert response.status_code == 200
+        token = response.json()["token"]
+        APIConfig.AUTH_TOKEN = token  # store it in config
+    return APIConfig.AUTH_TOKEN
+
+# -----------------------------------------------------------------------------
