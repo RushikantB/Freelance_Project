@@ -28,6 +28,8 @@ def driver_init(request):
     elif browser == "edge":
         service = EdgeService(EdgeChromiumDriverManager().install())
         driver = webdriver.Edge(service=service)
+    elif browser == "safari":
+        driver = webdriver.Safari()
     else:
         raise Exception(f"Browser '{browser}' is not supported.")
 
